@@ -1,5 +1,10 @@
 .PHONY: all sim build clean
 
+all: conf build sim
+
+clean:
+	rm -fr duv
+
 conf:
 	mkdir duv &&\
 	cd duv &&\
@@ -8,12 +13,6 @@ conf:
 	rm -fr fpga_mc &&\
 	rm -fr fpu &&\
 	find . -name '*~' -exec rm {} \;
-
-clean:
-	rm -fr duv
-
-all: conf build sim
-
 
 SV_TARGET := duv/test/test_top3.v
 
