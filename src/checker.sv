@@ -4,6 +4,8 @@ shortreal final_opA, final_opB, final_opOut;
 shortreal out;
 bit [31:0] bitout;
 
+int toleratebits;
+
 task check(
     input  bit [31:0] in_opA, in_opB,
     input  bit [2:0]  in_op,
@@ -35,7 +37,10 @@ task check(
 
     bitout = $shortrealtobits(out);
 
-    wrong = ((bitout ^ in_fpuout) > 32'd512);
+    if (!$value$plusargs("TOLERATE_BITS=%0d", toleratebits))
+        toleratebits = 8;
+
+    wrong = ((bitout ^ in_fpuout) > (2**toleratebits));
 
 endtask : check
 

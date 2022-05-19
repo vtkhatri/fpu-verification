@@ -3,11 +3,9 @@ module test;
     `include "top.svh"
 
     int NUM_TESTS;
-    initial begin
-        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS)) begin
+    initial
+        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS))
             NUM_TESTS = 10;
-        end
-    end
 
     logic clk, reset_n;
 
@@ -55,7 +53,7 @@ module test;
 
             if (wrong) begin
                 difference = check0.bitout^fpuOut;
-                $error("op = %p, opa = %08h(%p) , opb = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                $error("op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
                         OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
                         fpuOut, check0.final_opOut,
                         check0.bitout, check0.out,
