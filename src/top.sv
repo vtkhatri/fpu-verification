@@ -1,13 +1,14 @@
 module test;
 
-    `include "top.svh"
+    `include "../duv/fpu.v"
+    `include "bfm.sv"
 
     int NUM_TESTS;
     initial
         if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS))
             NUM_TESTS = 10;
 
-    logic clk, reset_n;
+    logic clk;
 
     // clock gen
     parameter  CLK_PERIOD = 200;
@@ -20,46 +21,19 @@ module test;
         end
     end
 
-    // generator
-    logic [31:0] opA, opB;
-    logic [1:0]  fpuOp;
-
-    generator gen0 = new;
-
-    // checker
-    logic [31:0] fpuOut;
-    logic [31:0] goldenOut;
-    logic [31:0] difference;
-    logic wrong;
-
-    checkor check0 = new;
+    bfm bfm0(clk);
 
     // stimulus
     parameter OUT_WAIT = 3;
     initial begin
-        reset_n = 0;
-        repeat(CLK_IDLE) @(negedge clk);
-        reset_n = 1;
+        bfm0.reset(CLK_IDLE);
 
-        // sampling
         do
         begin
-            assert (gen0.randomize());
-
-            gen0.get(opA, opB, fpuOp);
-            repeat (OUT_WAIT) @(posedge clk);
-
-            check0.check(opA, opB, fpuOp, fpuOut, wrong);
-
-            if (wrong) begin
-                $error("op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
-                        OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
-                        fpuOut, check0.final_opOut,
-                        check0.bitout, check0.out,
-                        check0.difference, check0.difference);
-            end
+            bfm0.test(OUT_WAIT);
+            bfm0.display();
         end
-        while (gen0.getcount() < NUM_TESTS);
+        while (bfm0.continuetesting(NUM_TESTS));
 
         $stop;
     end
@@ -67,10 +41,10 @@ module test;
     // instantiation of fpu
     fpu fpu0(
         .clk(clk),
-        .A(opA),
-        .B(opB),
-        .opcode(fpuOp),
-        .O(fpuOut)
+        .A(bfm0.opA),
+        .B(bfm0.opB),
+        .opcode(bfm0.fpuOp),
+        .O(bfm0.fpuOut)
     );
 
 endmodule : test
