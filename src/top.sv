@@ -5,7 +5,6 @@ module test;
     logic clk, reset_n;
 
     // old signals, to be fixed
-    logic [31:0] 	sum;
     logic		inf, snan, qnan;
     logic		div_by_zero;
     logic [31:0] 	exp;
@@ -38,11 +37,22 @@ module test;
         .out_op(fpuOp)
     );
 
-    // instantiation
+    // checker
+    logic [31:0] fpuOut;
+    logic [31:0] goldenOut;
+    logic correct;
+
+    checkor check0(
+        .in_opA(opA),
+        .in_opB(opB),
+        .in_op(fpuOp),
+        .in_fpuout(fpuOut),
+        .fpuout(goldenOut),
+        .correct(correct)
+    );
 
 
     initial begin
-        clk = 0;
         reset_n = 0;
         repeat(CLK_IDLE) @(negedge clk);
         reset_n = 1;
@@ -51,10 +61,10 @@ module test;
     end
 
     always @(posedge clk) begin
-        $display("%0t - op = %b, opa = %b , opb = %b, out = %b\n", $time, fpuOp, opA, opB, sum);
+        $display("%0t - op = %b, opa = %08h , opb = %08h, out = %08h, goldenOut = %p, opA = %p, bitmantA = %b, mantA = %p, expA = %p\n",
+                  $time, fpuOp, opA, opB, fpuOut, check0.out, check0.final_opA, check0.bitmantA, check0.mantA, check0.expA);
     end
 
     // instantiation of fpu
-    fpu u0(clk, fpu_rmode, fpuOp, opA, opB, sum, inf, snan, qnan, ine, overflow, underflow, zero, div_by_zero);
 
 endmodule : test

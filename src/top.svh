@@ -9,5 +9,5 @@
 
 `include "defs.sv"
 `include "generator.sv"
-// `include "checker.sv"
+`include "checker.sv"
 // `include "scoreboard.sv"

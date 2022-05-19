@@ -17,7 +17,7 @@ conf:
 SV_TARGET := src/top.sv
 
 top_module := test
-vsim_args  := -do "run 1000 ; q"
+vsim_args  := -do "run 10000 ; q"
 
 build:
 	vlog -lint $(SV_TARGET)
