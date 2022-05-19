@@ -1,6 +1,6 @@
 typedef enum {
     ADD,
     SUB,
-    MUL,
-    DIV
+    DIV,
+    MUL
 } OP_T;

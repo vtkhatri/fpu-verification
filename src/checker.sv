@@ -35,7 +35,7 @@ task check(
 
     bitout = $shortrealtobits(out);
 
-    wrong = (bitout != in_fpuout);
+    wrong = ((bitout ^ in_fpuout) > 32'd512);
 
 endtask : check
 

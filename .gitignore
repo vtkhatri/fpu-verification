@@ -1,2 +1,6 @@
 work/
 transcript
+duv/.git*
+duv/work/
+duv/fpu_tb.v
+duv/transcript
