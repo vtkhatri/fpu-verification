@@ -29,29 +29,15 @@ module test;
     logic [31:0] opA, opB;
     logic [2:0]  fpuOp;
 
-    generator gen0(
-        .clk(clk),
-        .reset_n(reset_n),
-        .out_opA(opA),
-        .out_opB(opB),
-        .out_op(fpuOp)
-    );
+    generator gen0 = new;
 
     // checker
     logic [31:0] fpuOut;
     logic [31:0] goldenOut;
-    logic correct;
 
-    checkor check0(
-        .in_opA(opA),
-        .in_opB(opB),
-        .in_op(fpuOp),
-        .in_fpuout(fpuOut),
-        .fpuout(goldenOut),
-        .correct(correct)
-    );
+    checkor check0 = new;
 
-
+    // stimulus
     initial begin
         reset_n = 0;
         repeat(CLK_IDLE) @(negedge clk);
@@ -60,9 +46,20 @@ module test;
         fpu_rmode = 2'b00;
     end
 
+    // sampling
     always @(posedge clk) begin
-        $display("%0t - op = %b, opa = %08h , opb = %08h, out = %08h, goldenOut = %p, opA = %p, bitmantA = %b, mantA = %p, expA = %p\n",
-                  $time, fpuOp, opA, opB, fpuOut, check0.out, check0.final_opA, check0.bitmantA, check0.mantA, check0.expA);
+
+        assert (gen0.randomize());
+
+        gen0.get(opA, opB, fpuOp);
+        check0.check(opA, opB, fpuOp, fpuOut, goldenOut);
+
+        $display("%0t - op = %b, opa = %08h , opb = %08h, out = %08h, goldenOut = %p",
+                  $time, fpuOp, opA, opB, fpuOut, check0.out);
+        $display("\t - a - mant = %p, bitmant = %b, exp = %p, unsigned = %p, final = %p",
+                            check0.mantA, check0.bitmantA, check0.expA, check0.unsigned_opA, check0.final_opA);
+        $display("\t - b - mant = %p, bitmant = %b, exp = %p, unsigned = %p, final = %p",
+                            check0.mantB, check0.bitmantB, check0.expB, check0.unsigned_opB, check0.final_opB);
     end
 
     // instantiation of fpu
