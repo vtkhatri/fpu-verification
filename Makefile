@@ -3,7 +3,7 @@
 all: conf build sim
 
 clean:
-	rm -fr duv
+	rm -fr duv work
 
 conf:
 	mkdir duv &&\
@@ -14,10 +14,10 @@ conf:
 	rm -fr fpu &&\
 	find . -name '*~' -exec rm {} \;
 
-SV_TARGET := duv/test/test_top3.v
+SV_TARGET := src/top.sv
 
 top_module := test
-vsim_args  := -do "run -all ; q"
+vsim_args  := -do "run 1000 ; q"
 
 build:
 	vlog -lint $(SV_TARGET)
