@@ -4,7 +4,7 @@ shortreal final_opA, final_opB, final_opOut;
 shortreal out;
 bit [31:0] bitout;
 
-int toleratebits;
+bit [31:0] toleratebits, difference;
 
 task check(
     input  bit [31:0] in_opA, in_opB,
@@ -40,7 +40,9 @@ task check(
     if (!$value$plusargs("TOLERATE_BITS=%0d", toleratebits))
         toleratebits = 8;
 
-    wrong = ((bitout ^ in_fpuout) > (2**toleratebits));
+    difference = bitout - in_fpuout;
+    difference = (difference[31]) ? -difference : difference;
+    wrong = (difference > (2**toleratebits));
 
 endtask : check
 
