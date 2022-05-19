@@ -12,10 +12,10 @@ real mantA, unsigned_opA, final_opA, mantB, unsigned_opB, final_opB;
 real out;
 
 always_comb begin
-    // mantissa by right-shifting 23 bits with an implied one as 24th bit 
+    // mantissa by right-shifting 23 bits with an implied one as 24th bit
     bitmantA = {1'b1, in_opA[22:0]};
     bitmantB = {1'b1, in_opB[22:0]};
-    
+
     mantA = bitmantA / (2.0**23);
     mantB = bitmantB / (2.0**23);
 

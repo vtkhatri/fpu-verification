@@ -66,5 +66,6 @@ module test;
     end
 
     // instantiation of fpu
+    fpu u0(clk, fpu_rmode, fpuOp, opA, opB, fpuOut, inf, snan, qnan, ine, overflow, underflow, zero, div_by_zero);
 
 endmodule : test
