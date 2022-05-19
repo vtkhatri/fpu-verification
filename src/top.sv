@@ -4,9 +4,11 @@ module test;
     `include "bfm.sv"
 
     int NUM_TESTS;
-    initial
-        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS))
-            NUM_TESTS = 10;
+    bit PER_CLK;
+    initial begin
+        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS)) NUM_TESTS = 10;
+        if (!$value$plusargs("PER_CLK=%0d", PER_CLK)) PER_CLK = 0;
+    end
 
     logic clk;
 
@@ -31,7 +33,7 @@ module test;
         do
         begin
             bfm0.test(OUT_WAIT);
-            bfm0.display();
+            bfm0.display(PER_CLK);
         end
         while (bfm0.continuetesting(NUM_TESTS));
 

@@ -33,9 +33,16 @@ task checkoutput();
     check0.check(opA, opB, fpuOp, fpuOut, wrong);
 endtask
 
-task display();
+task display(input bit print_clk);
     if (wrong) begin
         $error("op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
+                fpuOut, check0.final_opOut,
+                check0.bitout, check0.out,
+                check0.difference, check0.difference);
+    end
+    else if (print_clk) begin
+        $display("op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
                 OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
                 fpuOut, check0.final_opOut,
                 check0.bitout, check0.out,
