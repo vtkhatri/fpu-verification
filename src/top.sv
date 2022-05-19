@@ -2,20 +2,17 @@ module test;
 
     `include "top.svh"
 
+    int NUM_TESTS;
+    initial begin
+        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS)) begin
+            NUM_TESTS = 10;
+        end
+    end
+
     logic clk, reset_n;
 
-    // old signals, to be fixed
-    logic		inf, snan, qnan;
-    logic		div_by_zero;
-    logic [31:0] 	exp;
-
-    logic		ine;
-    logic		overflow, underflow;
-    logic		zero;
-    logic [1:0] 	fpu_rmode;
-
     // clock gen
-    parameter  CLK_PERIOD = 100;
+    parameter  CLK_PERIOD = 200;
     localparam CLK_WIDTH = CLK_PERIOD / 2;
     parameter  CLK_IDLE = 2;
     initial begin
@@ -27,42 +24,51 @@ module test;
 
     // generator
     logic [31:0] opA, opB;
-    logic [2:0]  fpuOp;
+    logic [1:0]  fpuOp;
 
     generator gen0 = new;
 
     // checker
     logic [31:0] fpuOut;
     logic [31:0] goldenOut;
+    logic wrong;
 
     checkor check0 = new;
 
     // stimulus
+    parameter OUT_WAIT = 3;
     initial begin
         reset_n = 0;
         repeat(CLK_IDLE) @(negedge clk);
         reset_n = 1;
 
-        fpu_rmode = 2'b00;
-    end
+        // sampling
+        do
+        begin
+            assert (gen0.randomize());
 
-    // sampling
-    always @(posedge clk) begin
+            gen0.get(opA, opB, fpuOp);
+            repeat (OUT_WAIT) @(posedge clk);
 
-        assert (gen0.randomize());
+            check0.check(opA, opB, fpuOp, fpuOut, wrong);
 
-        gen0.get(opA, opB, fpuOp);
-        check0.check(opA, opB, fpuOp, fpuOut, goldenOut);
+            if (wrong) begin
+            $error("op = %p, opa = %08h(%p) , opb = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut",
+                    OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB), fpuOut, check0.final_opOut, check0.bitout, check0.out);
+            end
+        end
+        while (gen0.getcount() < NUM_TESTS);
 
-        $display("%0t - op = %b, opa = %08h , opb = %08h, out = %08h, goldenOut = %p",
-                  $time, fpuOp, opA, opB, fpuOut, check0.out);
-        $display("\t - a - mant = %p, bitmant = %b, exp = %p, unsigned = %p, final = %p",
-                            check0.mantA, check0.bitmantA, check0.expA, check0.unsigned_opA, check0.final_opA);
-        $display("\t - b - mant = %p, bitmant = %b, exp = %p, unsigned = %p, final = %p",
-                            check0.mantB, check0.bitmantB, check0.expB, check0.unsigned_opB, check0.final_opB);
+        $stop;
     end
 
     // instantiation of fpu
-    fpu u0(clk, fpu_rmode, fpuOp, opA, opB, fpuOut, inf, snan, qnan, ine, overflow, underflow, zero, div_by_zero);
+    fpu fpu0(
+        .clk(clk),
+        .A(opA),
+        .B(opB),
+        .opcode(fpuOp),
+        .O(fpuOut)
+    );
 
 endmodule : test
