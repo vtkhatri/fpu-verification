@@ -20,7 +20,12 @@ endtask
 
 task test(input int wait_for_out);
     getinput();
-    repeat(wait_for_out) @(posedge clk);
+    if (fpuOp[1]) begin // if it's a mul/div
+        repeat(wait_for_out*32) @(posedge clk);
+    end
+    else begin
+        repeat(wait_for_out) @(posedge clk);
+    end
     checkoutput();
 endtask
 
@@ -42,8 +47,8 @@ task display(input bit print_clk);
                 check0.difference, check0.difference);
     end
     else if (print_clk) begin
-        $display("op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
-                OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
+        $display("%0t - op = %p, B = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                $time, OP_T'(fpuOp), opA, $bitstoshortreal(opA), opB, $bitstoshortreal(opB),
                 fpuOut, check0.final_opOut,
                 check0.bitout, check0.out,
                 check0.difference, check0.difference);
