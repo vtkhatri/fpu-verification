@@ -1,8 +1,6 @@
 interface bfm(input clk);
 
-`include "defs.sv"
-`include "generator.sv"
-`include "checker.sv"
+import defs::*;
 
 generator gen0 = new;
 checkor check0 = new;

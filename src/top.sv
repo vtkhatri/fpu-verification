@@ -1,7 +1,6 @@
 module test;
 
-    `include "../duv/fpu.v"
-    `include "bfm.sv"
+    import defs::*;
 
     int NUM_TESTS;
     bit PER_CLK;
