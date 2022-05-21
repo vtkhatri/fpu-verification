@@ -4,7 +4,6 @@ all: build sim
 
 NUM_TESTS := 100
 TOLERATE_BITS := 3
-PER_CLK := 0
 FPU_SRC := duv/pfpu32_top.v
 
 clean:
