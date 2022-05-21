@@ -12,7 +12,7 @@ task check(
     input  bit [31:0] in_fpuout,
     output bit wrong
 );
-    if ($test$plusargs("PER_CLK")) $display("%0t - check(a=%08h, b=%08h, o=%08h, op=%p)", $time, in_opA, in_opB, in_fpuout, OP_T'(in_op));
+    if ($test$plusargs("TEST_PRINT")) $display("%0t - check(a=%08h, b=%08h, o=%08h, op=%p)", $time, in_opA, in_opB, in_fpuout, OP_T'(in_op));
 
     final_opA = $bitstoshortreal(in_opA);
     final_opB = $bitstoshortreal(in_opB);
@@ -47,6 +47,13 @@ task check(
 
     if (wrong) begin
         $error("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
+                in_fpuout, final_opOut,
+                bitout, out,
+                difference, difference);
+    end
+    else if ($test$plusargs("TEST_PRINT")) begin
+        $display("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
                 OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
                 in_fpuout, final_opOut,
                 bitout, out,

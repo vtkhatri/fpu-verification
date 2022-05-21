@@ -18,8 +18,8 @@ vsim_args  := \
 	+NUM_TESTS=$(NUM_TESTS) \
 	+TOLERATE_BITS=$(TOLERATE_BITS)
 
-ifdef PER_CLK
-	vsim_args += +PER_CLK
+ifdef TEST_PRINT
+	vsim_args += +TEST_PRINT
 endif
 
 build:
