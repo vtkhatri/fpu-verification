@@ -1,7 +1,0 @@
-# read design
-read_verilog fpu.v
-hierarchy -check
-
-# high-level synthesis
-proc; opt; fsm; opt; memory; opt;
-show;

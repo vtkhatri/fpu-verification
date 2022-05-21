@@ -8,10 +8,11 @@ bit [31:0] toleratebits, difference;
 
 task check(
     input  bit [31:0] in_opA, in_opB,
-    input  bit [2:0]  in_op,
+    input  bit [7:0]  in_op,
     input  bit [31:0] in_fpuout,
-    output logic wrong
+    output bit wrong
 );
+    if ($test$plusargs("PER_CLK")) $display("%0t - check(a=%08h, b=%08h, o=%08h, op=%p)", $time, in_opA, in_opB, in_fpuout, OP_T'(in_op));
 
     final_opA = $bitstoshortreal(in_opA);
     final_opB = $bitstoshortreal(in_opB);
@@ -31,7 +32,7 @@ task check(
         out = final_opA * final_opB;
     end
     default: begin
-        $error("invalid opcode");
+        $error("invalid opcode - %b", in_op);
     end
     endcase
 
@@ -43,6 +44,14 @@ task check(
     difference = bitout - in_fpuout;
     difference = (difference[31]) ? -difference : difference;
     wrong = (difference > (2**toleratebits));
+
+    if (wrong) begin
+        $error("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
+                in_fpuout, final_opOut,
+                bitout, out,
+                difference, difference);
+    end
 
 endtask : check
 

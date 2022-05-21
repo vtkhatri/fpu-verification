@@ -10,9 +10,10 @@ module test;
     end
 
     logic clk;
+    bfm bfm0(clk);
 
     // clock gen
-    parameter  CLK_PERIOD = 200;
+    parameter  CLK_PERIOD = 10;
     localparam CLK_WIDTH = CLK_PERIOD / 2;
     parameter  CLK_IDLE = 2;
     initial begin
@@ -22,8 +23,6 @@ module test;
         end
     end
 
-    bfm bfm0(clk);
-
     // stimulus
     parameter OUT_WAIT = 3;
     initial begin
@@ -32,7 +31,7 @@ module test;
         do
         begin
             bfm0.test(OUT_WAIT);
-            bfm0.display(PER_CLK);
+            if ($test$plusargs("PER_CLK")) bfm0.display();
         end
         while (bfm0.continuetesting(NUM_TESTS));
 
@@ -40,12 +39,21 @@ module test;
     end
 
     // instantiation of fpu
-    fpu fpu0(
+    pfpu32_top fpu0(
         .clk(clk),
-        .A(bfm0.opA),
-        .B(bfm0.opB),
-        .opcode(bfm0.fpuOp),
-        .O(bfm0.fpuOut)
+        .rst(~bfm0.reset_n),
+        .flush_i(bfm0.flush),
+        .padv_decode_i(bfm0.decode),
+        .padv_execute_i(bfm0.execute),
+        .op_fpu_i(bfm0.fpuOp),
+        .rfa_i(bfm0.opA),
+        .rfb_i(bfm0.opB),
+        .round_mode_i(bfm0.rounding),
+        .fpu_result_o(bfm0.fpuOut),
+        .fpu_arith_valid_o(bfm0.validarithmetic),
+        .fpu_cmp_flag_o(bfm0.compare),
+        .fpu_cmp_valid_o(bfm0.validcompare),
+        .fpcsr_o(bfm0.fpcsr)
     );
 
 endmodule : test
