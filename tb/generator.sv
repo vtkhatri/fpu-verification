@@ -5,6 +5,17 @@ class generator;
     rand bit [22:0] mantA, mantB;
 
     rand OP_T  operation;
+    // currently only one constraint is kept active in bfm
+    // combination of different constraints needs to be active with more options of operation as well
+    // example, extra number can be generated randomly and then constraint conditions can be chosen here
+    // based on value's if else condition
+    constraint normonlyA		{expA != '0 || mantA == 0;};
+    constraint denormonlyA		{expA == '0 && mantA != '0;};
+    constraint zeroonlyA        {expA == '0 && mantA == '0;};
+    constraint normonlyB		{expB != '0 || mantB == 0;};
+    constraint denormonlyB		{expB == '0 && mantB != '0;};
+    constraint zeroonlyB		{expB == '0 && mantB == '0;};
+    constraint bothnormdenormAB	{};
 
     protected int randcount = 0;
 

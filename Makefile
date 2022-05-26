@@ -7,9 +7,9 @@ TOLERATE_BITS := 3
 FPU_SRC := duv/pfpu32_top.v
 
 clean:
-	rm -fr duv work
+	rm -fr work
 
-SV_TARGET := $(FPU_SRC) src/defs.sv src/bfm.sv src/top.sv
+SV_TARGET := $(FPU_SRC) tb/defs.sv tb/bfm.sv tb/top.sv
 
 top_module := test
 do_command := run -all ; q  # change to coverage commands afterwards
