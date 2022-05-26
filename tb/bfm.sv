@@ -29,7 +29,37 @@ task reset(input int CLK_IDLE);
     reset_n = 1;
 endtask
 
+task constraint_control();
+    gen0.constraint_mode(0);
+    case( (gen0.getcount())%7 )
+        0 : begin
+            gen0.normonlyA.constraint_mode(1);
+        end
+        1 : begin
+            gen0.denormonlyA.constraint_mode(1);
+        end
+        2 : begin
+            gen0.zeroonlyA.constraint_mode(1);
+        end
+        3 : begin
+            gen0.normonlyB.constraint_mode(1);
+        end
+        4 : begin
+            gen0.denormonlyB.constraint_mode(1);
+        end
+        5 : begin
+            gen0.zeroonlyB.constraint_mode(1);
+        end
+        6: begin
+            gen0.bothnormdenormAB.constraint_mode(1);
+        end
+    endcase
+endtask : constraint_control
+
 task test(input int wait_for_out);
+// Select one or more constraint to be applied
+    constraint_control();
+
     assert (gen0.randomize());
     gen0.get(opA, opB, fpuOp);
 
