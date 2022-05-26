@@ -1,50 +1,47 @@
 class monitor;
 
-    virtual bfm vb;
+    bit [31:0] out_A;
+    bit [31:0] out_B;
+    bit [7:0]  out_op;
+    bit [31:0] out_O;
+    
+    task execute(
+    input  bit [31:0] out_opA, out_opB,
+    input  bit [7:0]  out_op,
+    input  bit [31:0] out_fpuout
+    );
 
-    logic [31:0] A;
-    logic [31:0] B;
-    logic [31:0] O;
+    out_A=out_opA;
+    out_B=out_opB;
+    out_op=out_op;
+    out_O=out_fpuout;
 
-    input: covergroup inputs@(posedge vb.clk);
+    inputs.sample();
+    outputs.sample();
 
-        input_A: coverpoint A; // 64 bins
+    endtask : execute
 
-        input_B: coverpoint B; // 64 bins
+    covergroup inputs;
 
-        op_code: coverpoint opcode{
+        input_A: coverpoint out_A; // 64 bins
+
+        input_B: coverpoint out_B; // 64 bins
+
+        op_code: coverpoint out_op{
             bins op[4]={[0:3]};
         }
+        
+    endgroup
 
-        cross opcode, A;
-        cross opcode, B;
+    covergroup outputs;
+
+        output_duv: coverpoint out_O; // 64 bins
 
     endgroup
 
-    output: covergroup outputs@(posedge vb.clk);
-
-        O_o: coverpoint O; // 64 bins
-
-    endgroup
-
-    function new(virtual bfm b);
-        inputs=new();
-        outputs=new();
-        vb=b;
-    endfunction : new
-
-    task execute();
-        forever begin : sampling_block
-        @(negedge vb.clk);
-        @(negedge vb.clk); // stable sampling
-
-        A=vb.A;
-        B=vb.B;
-        O=vb.O;
-
-        inputs.sample();
-        output.sample();
-        end : sampling_block
-    endtask : execute
+     function new();
+        inputs = new();
+        outputs = new();
+     endfunction : new
 
 endclass : monitor

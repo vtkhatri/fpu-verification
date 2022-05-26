@@ -20,6 +20,7 @@ logic [`OR1K_FPCSR_WIDTH-1:0] fpcsr;
 generator gen0 = new;
 checkor check0 = new;
 drivor driver0 = new;
+monitor monitor0 = new;
 
 logic wrong;
 
@@ -34,9 +35,10 @@ task test(input int wait_for_out);
     gen0.get(opA, opB, fpuOp);
 
     drive();
-
+    
     check0.check(opA, opB, fpuOp, fpuOut, wrong);
-
+    @(negedge clk);
+    monitor0.execute(opA, opB, fpuOp, fpuOut);
     doflush();
 endtask
 

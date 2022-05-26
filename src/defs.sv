@@ -17,8 +17,8 @@ typedef enum {
 `include "driver.sv"
 `include "checker.sv"
 `include "generator.sv"
-// `include "monitor.sv"  // todo : amogh fix the virtual instantiation of bfm
-                          // look at how values are passed to checker and try to emulate that
+`include "monitor.sv" 
+
 `include "../duv/mor1kx-defines.v"
 
 endpackage : defs
