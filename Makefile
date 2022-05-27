@@ -12,7 +12,9 @@ clean:
 SV_TARGET := $(FPU_SRC) tb/defs.sv tb/bfm.sv tb/top.sv
 
 top_module := test
-do_command := run -all ; q  # change to coverage commands afterwards
+ucdb_file  := coverage.ucdb
+cover_repo := coverage.txt
+do_command := coverage save -onexit $(ucdb_file) ; run -all ; q
 vsim_args  := \
 	-do "$(do_command)" \
 	+NUM_TESTS=$(NUM_TESTS) \
@@ -25,6 +27,10 @@ endif
 build:
 	vlog -lint $(SV_TARGET)
 
-sim:
-	vsim -c -do "coverage save -onexit UCDBfile ; run -all ; q -sim ; vcover report -verbose UCDBfile > functcov$(clocks).txt ; q" \
-			work.$(top_module) $(vsim_args)
+sim: simulate cover
+
+simulate:
+	vsim -c work.$(top_module) $(vsim_args)
+
+cover:
+	vcover report -verbose $(ucdb_file) > $(cover_repo)

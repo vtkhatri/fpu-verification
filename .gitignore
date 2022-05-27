@@ -5,3 +5,4 @@ duv/work/
 duv/fpu_tb.v
 duv/transcript
 *.wlf
+coverage*

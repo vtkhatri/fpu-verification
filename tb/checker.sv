@@ -6,6 +6,11 @@ bit [31:0] bitout;
 
 bit [31:0] toleratebits, difference;
 
+// this task takes inputs that are readily available from bfm and checks
+// against expected output from a reference model using SV var type "shortreal"
+//
+// due to this, scoreboard is not a required component in our implementation
+
 task check(
     input  bit [31:0] in_opA, in_opB,
     input  bit [7:0]  in_op,
