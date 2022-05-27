@@ -26,4 +26,5 @@ build:
 	vlog -lint $(SV_TARGET)
 
 sim:
-	vsim -c work.$(top_module) $(vsim_args)
+	vsim -c -do "coverage save -onexit UCDBfile ; run -all ; q -sim ; vcover report -verbose UCDBfile > functcov$(clocks).txt ; q" \
+			work.$(top_module) $(vsim_args)
