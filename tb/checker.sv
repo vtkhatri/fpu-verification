@@ -61,13 +61,14 @@ class checkor;
         if (!$value$plusargs("TOLERATE_BITS=%0d", toleratebits))
             toleratebits = 8;
 
-        if (bitout[30:23]) begin
-            wrong = (bitout[30:23] == in_fpuout[30:23]);
+        if (bitout[30:23] == '1) begin
+            wrong = (bitout[30:23] != in_fpuout[30:23]);
         end
-        else
+        else begin
             difference = bitout - in_fpuout;
             difference = (difference[31]) ? -difference : difference;
             wrong = (difference > (2**toleratebits));
+        end
 
 
         if (wrong) begin
