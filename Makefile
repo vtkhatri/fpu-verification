@@ -16,18 +16,24 @@ top_module := test
 ucdb_file  := coverage.ucdb
 cover_repo := coverage.report
 do_command := coverage save -onexit $(ucdb_file) ; run -all ; q
+vlog_args  := \
+	-lint \
+	-suppress 8604 \
+	-warning error
+
 vsim_args  := \
 	-do "$(do_command)" \
 	+NUM_TESTS=$(NUM_TESTS) \
 	+TOLERATE_BITS=$(TOLERATE_BITS) \
-	+RAND_CONS=$(RAND_CONS)
+	+RAND_CONS=$(RAND_CONS) \
+	-suppress 8604
 
 ifdef TEST_PRINT
 	vsim_args += +TEST_PRINT
 endif
 
 build:
-	vlog -lint $(SV_TARGET)
+	vlog $(vlog_args) $(SV_TARGET)
 
 sim: simulate cover
 
