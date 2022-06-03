@@ -20,17 +20,17 @@ interface bfm;
     logic wrong;
 
     task clkgen();
-        localparam CLK_PERIOD = 10;
-        localparam CLK_WIDTH = CLK_PERIOD / 2;
-        localparam CLK_IDLE = 2;
-            clk = 0;
+        static int CLK_PERIOD = 10;
+        static int CLK_WIDTH = CLK_PERIOD / 2;
+        clk = 0;
 
         forever begin
             #CLK_WIDTH clk = ~clk;
         end
     endtask : clkgen
 
-    task reset(input int CLK_IDLE);
+    task reset();
+        static int CLK_IDLE = 2;
         reset_n = 0;
         repeat(CLK_IDLE) @(posedge clk);
         reset_n = 1;
@@ -43,10 +43,11 @@ interface bfm;
     task test(input transaction transaction0);
         rounding_mode(transaction0);
 
+        transaction0.get(opA, opB, fpuOp);
+
         drive();
         waittilldone();
 
-        doflush();
     endtask
 
     task drive();

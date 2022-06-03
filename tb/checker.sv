@@ -23,7 +23,10 @@ class checkor;
             vbfm0.waittilldoneandflushed();
 
             common::mon2che.get(transaction0);
-            transaction0.get(in_opA, in_opB, in_op);
+            in_opA = transaction0.opA;
+            in_opB = transaction0.opB;
+            in_op = transaction0.fpuOp;
+            in_fpuout = transaction0.fpuOut;
             check();
         end
     endtask : run

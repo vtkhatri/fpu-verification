@@ -33,8 +33,11 @@ module test;
 
         fork
             bfm0.clkgen();
-            env0.run();
+            bfm0.reset();
         join_any
+
+        env0.run();
+
         $stop;
     end
 
