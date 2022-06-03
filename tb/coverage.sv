@@ -44,19 +44,27 @@ class coverage;
         }
 
         exponent_A: coverpoint o_expA{
-            bins exponent_A[4]={[0:$]};
+            bins exponent_A_zero={0};
+            bins exponent_A={[2:$]};
+            bins exponent_A_one={1};
         }
 
         exponent_B: coverpoint o_expB{
-            bins exponent_B[4]={[0:$]};
+            bins exponent_B_zero={0};
+            bins exponent_B={[2:$]};
+            bins exponent_B_one={1};
         }
 
         fraction_A: coverpoint o_mantA{
-            bins fraction_A[4]={[0:$]};
+            bins fraction_A_zero={0};
+            bins fraction_A={[2:$]};
+            bins fraction_A_one={1};
         }
 
         fraction_B: coverpoint o_mantB{
-            bins fraction_B[4]={[0:$]};
+            bins fraction_B_zero={0};
+            bins fraction_B={[2:$]};
+            bins fraction_B_one={1};
         }
 
         // ignoring mantasa and exponent when the number is negative for A
@@ -90,13 +98,19 @@ class coverage;
             vbfm0.waittilldone();
             common::mon2cov.get(transaction0);
             out_A = transaction0.opA;
-            out_A = transaction0.opA;
+            out_B = transaction0.opA;
             out_op = transaction0.fpuOp;
             out_O = transaction0.fpuOut;
 
-            out_A = { >>{o_signA, o_expA, o_mantA}};
-            out_B = { >>{o_signB, o_expB, o_mantB}};
-            out_O = { >>{o_fpu_out}};
+            o_signA=out_A[31];
+            o_expA= out_A[30:23]; 
+            o_mantA=out_A[22:0];
+
+            o_signB=out_A[31];
+            o_expB= out_B[30:23]; 
+            o_mantB=out_B[22:0];
+            
+            out_O = out_O[31];
 
             inputs.sample();
             outputs.sample();
