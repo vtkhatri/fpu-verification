@@ -11,6 +11,8 @@ class coverage;
     bit [22:0] o_mantA, o_mantB;
 
     bit o_fpu_out;
+    bit [7:0] o_expO;
+    bit [22:0] o_mantO;
 
     transaction transaction0;
     virtual bfm vbfm0;
@@ -45,26 +47,26 @@ class coverage;
 
         exponent_A: coverpoint o_expA{
             bins exponent_A_zero={0};
-            bins exponent_A={[2:$]};
-            bins exponent_A_one={1};
+            bins exponent_A={['h1:'hfe]};
+            bins exponent_A_ones={'hff};
         }
 
         exponent_B: coverpoint o_expB{
             bins exponent_B_zero={0};
-            bins exponent_B={[2:$]};
-            bins exponent_B_one={1};
+            bins exponent_B={['h1:'hfe]};
+            bins exponent_B_ones={'hff};
         }
 
         fraction_A: coverpoint o_mantA{
             bins fraction_A_zero={0};
-            bins fraction_A={[2:$]};
-            bins fraction_A_one={1};
+            bins fraction_A={['h1:'h7ffffe]};
+            bins fraction_A_ones={'h7fffff};
         }
 
         fraction_B: coverpoint o_mantB{
             bins fraction_B_zero={0};
-            bins fraction_B={[2:$]};
-            bins fraction_B_one={1};
+            bins fraction_B={['h1:'h7ffffe]};
+            bins fraction_B_ones={'hfffff};
         }
 
         // ignoring mantasa and exponent when the number is negative for A
@@ -87,6 +89,18 @@ class coverage;
             bins negative_output = {1};      // covering if output is negative
         }
 
+        exponent_out: coverpoint o_expO{
+            bins exponent_O_zero={0};
+            bins exponent_O={['h1:'hfe]};
+            bins exponent_O_ones={'hff};
+        }
+
+        fraction_out: coverpoint o_mantO{
+            bins fraction_O_zero={0};
+            bins fraction_O={['h1:'h7ffffe]};
+            bins fraction_O_ones={'hfffff};
+        }
+
     endgroup
 
     task run();
@@ -98,7 +112,7 @@ class coverage;
             vbfm0.waittilldone();
             common::mon2cov.get(transaction0);
             out_A = transaction0.opA;
-            out_B = transaction0.opA;
+            out_B = transaction0.opB;
             out_op = transaction0.fpuOp;
             out_O = transaction0.fpuOut;
 
@@ -110,7 +124,9 @@ class coverage;
             o_expB= out_B[30:23]; 
             o_mantB=out_B[22:0];
             
-            out_O = out_O[31];
+            o_fpu_out = out_O[31];
+            o_expO  = out_B[30:23];
+            o_mantO = out_B[22:0];
 
             inputs.sample();
             outputs.sample();
