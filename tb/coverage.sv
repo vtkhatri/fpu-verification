@@ -17,10 +17,14 @@ class coverage;
         input_B: coverpoint out_B; // 64 bins
 
         op_code: coverpoint out_op{
-            bins op_add = {32'b10000000};
-            bins op_sub = {32'b10000001};
-            bins op_mul = {32'b10000010};
-            bins op_div = {32'b10000011};
+            bins op_add = {ADD};
+            bins op_sub = {SUB};
+            bins op_mul = {MUL};
+            bins op_div = {DIV};
+            bins all_follow_div_op[] = ([ADD:DIV] => DIV);
+            bins all_follow_mul_op[] = ([ADD:DIV] => MUL);
+            bins all_follow_sub_op[] = ([ADD:DIV] => SUB);
+            bins all_follow_add_op[] = ([ADD:DIV] => ADD);
         }
 
     endgroup
