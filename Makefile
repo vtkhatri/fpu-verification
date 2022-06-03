@@ -14,7 +14,7 @@ SV_TARGET := $(FPU_SRC) tb/defs.sv tb/bfm.sv tb/top.sv
 
 top_module := test
 ucdb_file  := coverage.ucdb
-cover_repo := coverage.txt
+cover_repo := coverage.report
 do_command := coverage save -onexit $(ucdb_file) ; run -all ; q
 vsim_args  := \
 	-do "$(do_command)" \

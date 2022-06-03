@@ -7,4 +7,5 @@ duv/transcript
 *.wlf
 *.vcd
 *.vstf
-coverage*
+*.ucdb
+*.report
