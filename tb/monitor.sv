@@ -1,47 +1,26 @@
 class monitor;
 
-    bit [31:0] out_A;
-    bit [31:0] out_B;
-    bit [7:0]  out_op;
-    bit [31:0] out_O;
-    
-    task execute(
-    input  bit [31:0] out_opA, out_opB,
-    input  bit [7:0]  out_op,
-    input  bit [31:0] out_fpuout
-    );
+    transaction transaction0;
+    virtual bfm vbfm0;
 
-    out_A=out_opA;
-    out_B=out_opB;
-    out_op=out_op;
-    out_O=out_fpuout;
+    task run();
+        vbfm0 = common::cbfm0;
 
-    inputs.sample();
-    outputs.sample();
+        transaction0 = new();
+        forever begin
+            vbfm0.waittilldone();
 
-    endtask : execute
+            transaction0.opA = vbfm0.opA;
+            transaction0.opB = vbfm0.opB;
+            transaction0.fpuOp = vbfm0.fpuOp;
 
-    covergroup inputs;
+            @(posedge vbfm0.clk);
+            transaction0.fpuOut = vbfm0.fpuOut;
 
-        input_A: coverpoint out_A; // 64 bins
+            common::mon2che.put(transaction0); // for verification against reference model
+            common::mon2cov.put(transaction0); // for collecting coverage
 
-        input_B: coverpoint out_B; // 64 bins
-
-        op_code: coverpoint out_op{
-            bins op[4]={[0:3]};
-        }
-        
-    endgroup
-
-    covergroup outputs;
-
-        output_duv: coverpoint out_O; // 64 bins
-
-    endgroup
-
-     function new();
-        inputs = new();
-        outputs = new();
-     endfunction : new
+        end
+    endtask : run
 
 endclass : monitor

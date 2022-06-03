@@ -1,21 +1,15 @@
 class drivor;
 
-task decode(output bit decode, execute);
-    decode = 1;
-    execute = 0;
-endtask : decode
+    transaction transaction0;
+    virtual bfm vbfm0;
 
-task execute(output bit decode, execute);
-    decode = 0;
-    execute = 1;
-endtask : execute
+    task run();
+        vbfm0 = common::cbfm0;
 
-task done(output bit done);
-    done = 0;
-endtask
-
-task roundmode(output bit[1:0] rmode);
-    rmode = rm_nearest;
-endtask
+        forever begin
+            common::gen2drv.get(transaction0);
+            vbfm0.test(transaction0);
+        end
+    endtask : run
 
 endclass : drivor

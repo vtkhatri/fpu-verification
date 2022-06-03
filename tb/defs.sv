@@ -14,11 +14,14 @@ typedef enum {
     rm_to_infm
 } RMODE_T;
 
+`include "common.sv"
+`include "transaction.sv"
+`include "generator.sv"
 `include "driver.sv"
 `include "checker.sv"
-`include "generator.sv"
-`include "monitor.sv" 
-
+`include "monitor.sv"
+`include "coverage.sv"
+`include "environment.sv"
 `include "../duv/mor1kx-defines.v"
 
 endpackage : defs

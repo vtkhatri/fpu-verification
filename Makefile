@@ -4,6 +4,7 @@ all: build sim
 
 NUM_TESTS := 100
 TOLERATE_BITS := 3
+RAND_CONS := 5
 FPU_SRC := duv/pfpu32_top.v
 
 clean:
@@ -18,7 +19,8 @@ do_command := coverage save -onexit $(ucdb_file) ; run -all ; q
 vsim_args  := \
 	-do "$(do_command)" \
 	+NUM_TESTS=$(NUM_TESTS) \
-	+TOLERATE_BITS=$(TOLERATE_BITS)
+	+TOLERATE_BITS=$(TOLERATE_BITS) \
+	+RAND_CONS=$(RAND_CONS)
 
 ifdef TEST_PRINT
 	vsim_args += +TEST_PRINT

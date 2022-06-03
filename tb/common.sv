@@ -1,7 +1,8 @@
 class common;
 
     static mailbox gen2drv = new();
-    static mailbox mon2sco = new();
-    static virtual bfm sif;
+    static mailbox mon2cov = new();
+    static mailbox mon2che = new();
+    static virtual bfm cbfm0;
 
 endclass : common

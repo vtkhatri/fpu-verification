@@ -2,43 +2,13 @@ module test;
 
     import defs::*;
 
-    int NUM_TESTS;
-    bit TEST_PRINT;
-    initial begin
-        if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS)) NUM_TESTS = 10;
-    end
-
-    logic clk;
-    bfm bfm0(clk);
-
-    // clock gen
-    parameter  CLK_PERIOD = 10;
-    localparam CLK_WIDTH = CLK_PERIOD / 2;
-    parameter  CLK_IDLE = 2;
-    initial begin
-        clk = 0;
-        forever begin
-            #CLK_WIDTH clk = ~clk;
-        end
-    end
-
-    // stimulus
-    parameter OUT_WAIT = 3;
-    initial begin
-        bfm0.reset(CLK_IDLE);
-
-        do
-        begin
-            bfm0.test(OUT_WAIT);
-        end
-        while (bfm0.continuetesting(NUM_TESTS));
-
-        $stop;
-    end
+    bfm bfm0();
+    common      common0;
+    environment env0;
 
     // instantiation of fpu
     pfpu32_top fpu0(
-        .clk(clk),
+        .clk(bfm0.clk),
         .rst(~bfm0.reset_n),
         .flush_i(bfm0.flush),
         .padv_decode_i(bfm0.decode),
@@ -53,5 +23,20 @@ module test;
         .fpu_cmp_valid_o(bfm0.validcompare),
         .fpcsr_o(bfm0.fpcsr)
     );
+
+    initial begin
+        $dumpfile("dump.vcd");
+
+        common0 = new();
+        env0 = new();
+        common0.cbfm0 = bfm0;
+
+        fork
+            bfm0.clkgen();
+            env0.run();
+        join_any
+        $stop;
+    end
+
 
 endmodule : test

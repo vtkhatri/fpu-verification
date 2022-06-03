@@ -1,70 +1,82 @@
 class checkor;
 
-shortreal final_opA, final_opB, final_opOut;
-shortreal out;
-bit [31:0] bitout;
+    shortreal final_opA, final_opB, final_opOut;
+    shortreal out;
+    bit [31:0] bitout;
 
-bit [31:0] toleratebits, difference;
+    bit [31:0] in_opA, in_opB;
+    bit [7:0]  in_op;
+    bit [31:0] in_fpuout;
 
-// this task takes inputs that are readily available from bfm and checks
-// against expected output from a reference model using SV var type "shortreal"
-//
-// due to this, scoreboard is not a required component in our implementation
+    bit wrong;
 
-task check(
-    input  bit [31:0] in_opA, in_opB,
-    input  bit [7:0]  in_op,
-    input  bit [31:0] in_fpuout,
-    output bit wrong
-);
-    if ($test$plusargs("TEST_PRINT")) $display("%0t - check(a=%08h, b=%08h, o=%08h, op=%p)", $time, in_opA, in_opB, in_fpuout, OP_T'(in_op));
+    bit [31:0] toleratebits, difference;
 
-    final_opA = $bitstoshortreal(in_opA);
-    final_opB = $bitstoshortreal(in_opB);
-    final_opOut = $bitstoshortreal(in_fpuout);
+    transaction transaction0;
+    virtual bfm vbfm0;
 
-    case (in_op)
-    ADD: begin
-        out = final_opA + final_opB;
-    end
-    SUB: begin
-        out = final_opA - final_opB;
-    end
-    DIV: begin
-        out = final_opA / final_opB;
-    end
-    MUL: begin
-        out = final_opA * final_opB;
-    end
-    default: begin
-        $error("invalid opcode - %b", in_op);
-    end
-    endcase
+    task run();
+        vbfm0 = common::cbfm0;
 
-    bitout = $shortrealtobits(out);
+        transaction0 = new();
+        forever begin
+            vbfm0.waittilldoneandflushed();
 
-    if (!$value$plusargs("TOLERATE_BITS=%0d", toleratebits))
-        toleratebits = 8;
+            common::mon2che.get(transaction0);
+            transaction0.get(in_opA, in_opB, in_op);
+            check();
+        end
+    endtask : run
 
-    difference = bitout - in_fpuout;
-    difference = (difference[31]) ? -difference : difference;
-    wrong = (difference > (2**toleratebits));
+    task check();
+        if ($test$plusargs("TEST_PRINT")) $display("%0t - check(a=%08h, b=%08h, o=%08h, op=%p)", $time, in_opA, in_opB, in_fpuout, OP_T'(in_op));
 
-    if (wrong) begin
-        $error("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
-                OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
-                in_fpuout, final_opOut,
-                bitout, out,
-                difference, difference);
-    end
-    else if ($test$plusargs("TEST_PRINT")) begin
-        $display("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
-                OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
-                in_fpuout, final_opOut,
-                bitout, out,
-                difference, difference);
-    end
+        final_opA = $bitstoshortreal(in_opA);
+        final_opB = $bitstoshortreal(in_opB);
+        final_opOut = $bitstoshortreal(in_fpuout);
 
-endtask : check
+        case (in_op)
+        ADD: begin
+            out = final_opA + final_opB;
+        end
+        SUB: begin
+            out = final_opA - final_opB;
+        end
+        DIV: begin
+            out = final_opA / final_opB;
+        end
+        MUL: begin
+            out = final_opA * final_opB;
+        end
+        default: begin
+            $error("invalid opcode - %b", in_op);
+        end
+        endcase
+
+        bitout = $shortrealtobits(out);
+
+        if (!$value$plusargs("TOLERATE_BITS=%0d", toleratebits))
+            toleratebits = 8;
+
+        difference = bitout - in_fpuout;
+        difference = (difference[31]) ? -difference : difference;
+        wrong = (difference > (2**toleratebits));
+
+        if (wrong) begin
+            $error("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                    OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
+                    in_fpuout, final_opOut,
+                    bitout, out,
+                    difference, difference);
+        end
+        else if ($test$plusargs("TEST_PRINT")) begin
+            $display("op = %p, A = %08h(%p) , B = %08h(%p)\n\t%08h(%p) - out\n\t%08h(%p) - goldenOut\n\t%08h(%0d) - difference",
+                    OP_T'(in_op), in_opA, final_opA, in_opB, final_opB,
+                    in_fpuout, final_opOut,
+                    bitout, out,
+                    difference, difference);
+        end
+
+    endtask : check
 
 endclass : checkor
