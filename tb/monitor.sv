@@ -9,7 +9,6 @@ class monitor;
         transaction0 = new();
         forever begin
             vbfm0.waittilldone();
-            common::drv2mon.get(transaction0);
 
             transaction0.opA = vbfm0.opA;
             transaction0.opB = vbfm0.opB;
