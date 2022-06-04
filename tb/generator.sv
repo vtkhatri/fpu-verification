@@ -20,7 +20,7 @@ class generator;
 
     task setconstraints();
         int RAND_CONS = 7;
-        if (!$value$plusargs("RAND_CONS=%0d", RAND_CONS))
+        if ($value$plusargs("RAND_CONS=%0d", RAND_CONS))
         begin
             $display("Constraints chosen with RAND_CONS = %d", RAND_CONS);
             RAND_CONS = RAND_CONS + 1;
@@ -47,6 +47,10 @@ class generator;
             end
             6: begin
                 t.bothnormdenormAB.constraint_mode(1);
+            end
+			50: begin
+                t.zeroonlyA.constraint_mode(1);
+				t.zeroonlyB.constraint_mode(1);
             end
             default: begin
                 t.normonlyA.constraint_mode(1);

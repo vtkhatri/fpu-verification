@@ -47,36 +47,72 @@ class coverage;
 
         exponent_A: coverpoint o_expA{
             bins exponent_A_zero={0};
-            bins exponent_A={['h1:'hfe]};
+            bins exponent_A_r={['h1:'hfe]};
             bins exponent_A_ones={'hff};
         }
 
         exponent_B: coverpoint o_expB{
             bins exponent_B_zero={0};
-            bins exponent_B={['h1:'hfe]};
+            bins exponent_B_r={['h1:'hfe]};
             bins exponent_B_ones={'hff};
         }
 
         fraction_A: coverpoint o_mantA{
             bins fraction_A_zero={0};
-            bins fraction_A={['h1:'h7ffffe]};
+            bins fraction_A_r={['h1:'h7ffffe]};
             bins fraction_A_ones={'h7fffff};
         }
 
         fraction_B: coverpoint o_mantB{
             bins fraction_B_zero={0};
-            bins fraction_B={['h1:'h7ffffe]};
+            bins fraction_B_r={['h1:'h7ffffe]};
             bins fraction_B_ones={'hfffff};
         }
 
-        // ignoring mantasa and exponent when the number is negative for A
-        cross o_signA,o_expA,o_mantA{
-            ignore_bins negative = binsof(o_signA) intersect{1}; 
+        opA_0_and_inf: cross op_code,exponent_A,fraction_A{
+            bins add_A0 = binsof(op_code) intersect{ADD} &&
+							(binsof (exponent_A.exponent_A_zero) && binsof (fraction_A.fraction_A_zero));
+			bins sub_A0 = binsof(op_code) intersect{SUB} &&
+							(binsof (exponent_A.exponent_A_zero) && binsof (fraction_A.fraction_A_zero));
+			bins mul_A0 = binsof(op_code) intersect{MUL} &&
+							(binsof (exponent_A.exponent_A_zero) && binsof (fraction_A.fraction_A_zero));
+			bins div_A0 = binsof(op_code) intersect{DIV} &&
+							(binsof (exponent_A.exponent_A_zero) && binsof (fraction_A.fraction_A_zero));
+			bins add_Ainf = binsof(op_code) intersect{ADD} &&
+							(binsof (exponent_A.exponent_A_ones) && binsof (fraction_A.fraction_A_zero));
+			bins sub_Ainf = binsof(op_code) intersect{SUB} &&
+							(binsof (exponent_A.exponent_A_ones) && binsof (fraction_A.fraction_A_zero));
+			bins mul_Ainf = binsof(op_code) intersect{MUL} &&
+							(binsof (exponent_A.exponent_A_ones) && binsof (fraction_A.fraction_A_zero));
+			bins div_Ainf = binsof(op_code) intersect{DIV} &&
+							(binsof (exponent_A.exponent_A_ones) && binsof (fraction_A.fraction_A_zero));
+			ignore_bins others_all =	binsof(op_code.all_follow_div_op) || binsof(op_code.all_follow_mul_op) ||
+										binsof(op_code.all_follow_sub_op) || binsof(op_code.all_follow_add_op) ||
+										binsof(fraction_A.fraction_A_r) || binsof(exponent_A.exponent_A_r) ||
+										binsof(fraction_A.fraction_A_ones) || binsof(fraction_A.fraction_A_r);
         }
 
-        // ignoring mantasa and exponent when the number is negative for B
-        cross o_signB,o_expB,o_mantB{
-            ignore_bins negative = binsof(o_signB) intersect{1};
+        opB_0_and_inf: cross op_code,exponent_B,fraction_B{
+            bins add_B0 = binsof(op_code) intersect{ADD} &&
+							(binsof (exponent_B.exponent_B_zero) && binsof (fraction_B.fraction_B_zero));
+			bins sub_B0 = binsof(op_code) intersect{SUB} &&
+							(binsof (exponent_B.exponent_B_zero) && binsof (fraction_B.fraction_B_zero));
+			bins mul_B0 = binsof(op_code) intersect{MUL} &&
+							(binsof (exponent_B.exponent_B_zero) && binsof (fraction_B.fraction_B_zero));
+			bins div_B0 = binsof(op_code) intersect{DIV} &&
+							(binsof (exponent_B.exponent_B_zero) && binsof (fraction_B.fraction_B_zero));
+			bins add_Binf = binsof(op_code) intersect{ADD} &&
+							(binsof (exponent_B.exponent_B_ones) && binsof (fraction_B.fraction_B_zero));
+			bins sub_Binf = binsof(op_code) intersect{SUB} &&
+							(binsof (exponent_B.exponent_B_ones) && binsof (fraction_B.fraction_B_zero));
+			bins mul_Binf = binsof(op_code) intersect{MUL} &&
+							(binsof (exponent_B.exponent_B_ones) && binsof (fraction_B.fraction_B_zero));
+			bins div_Binf = binsof(op_code) intersect{DIV} &&
+							(binsof (exponent_B.exponent_B_ones) && binsof (fraction_B.fraction_B_zero));
+			ignore_bins others_all =	binsof(op_code.all_follow_div_op) || binsof(op_code.all_follow_mul_op) ||
+										binsof(op_code.all_follow_sub_op) || binsof(op_code.all_follow_add_op) ||
+										binsof(fraction_B.fraction_B_r) || binsof(exponent_B.exponent_B_r) ||
+										binsof(fraction_B.fraction_B_ones) || binsof(fraction_B.fraction_B_r);
         }
 
     endgroup
@@ -87,19 +123,31 @@ class coverage;
 
         negative_out: coverpoint o_fpu_out{
             bins negative_output = {1};      // covering if output is negative
+			bins positive_output = {0};
         }
 
         exponent_out: coverpoint o_expO{
-            bins exponent_O_zero={0};
-            bins exponent_O={['h1:'hfe]};
-            bins exponent_O_ones={'hff};
+            bins exponent_O_zero	={0};
+            bins exponent_O_r		={['h1:'hfe]};
+            bins exponent_O_ones	={'hff};
         }
 
         fraction_out: coverpoint o_mantO{
-            bins fraction_O_zero={0};
-            bins fraction_O={['h1:'h7ffffe]};
-            bins fraction_O_ones={'hfffff};
+            bins fraction_O_zero	={0};
+            bins fraction_O_r		={['h1:'h7ffffe]};
+            bins fraction_O_ones	={'hfffff};
         }
+
+		output_special: cross exponent_out, fraction_out{
+			bins op_zero	= binsof (exponent_out.exponent_O_zero) && binsof (fraction_out.fraction_O_zero);
+			bins op_inf		= binsof (exponent_out.exponent_O_ones) && binsof (fraction_out.fraction_O_zero);
+			bins op_normal	= binsof (exponent_out.exponent_O_r);
+			bins op_subnorm	= binsof (exponent_out.exponent_O_zero) && 
+								(binsof (fraction_out.fraction_O_r) || binsof (fraction_out.fraction_O_ones));
+			bins op_NaN		= binsof (exponent_out.exponent_O_ones) && 
+								(binsof (fraction_out.fraction_O_r) || binsof (fraction_out.fraction_O_ones));
+
+		}
 
     endgroup
 
@@ -116,17 +164,17 @@ class coverage;
             out_op = transaction0.fpuOp;
             out_O = transaction0.fpuOut;
 
-            o_signA=out_A[31];
-            o_expA= out_A[30:23]; 
-            o_mantA=out_A[22:0];
+            o_signA	= out_A[31];
+            o_expA	= out_A[30:23]; 
+            o_mantA	= out_A[22:0];
 
-            o_signB=out_A[31];
-            o_expB= out_B[30:23]; 
-            o_mantB=out_B[22:0];
+            o_signB	= out_B[31];
+            o_expB	= out_B[30:23]; 
+            o_mantB	= out_B[22:0];
             
             o_fpu_out = out_O[31];
-            o_expO  = out_B[30:23];
-            o_mantO = out_B[22:0];
+            o_expO  = out_O[30:23];
+            o_mantO = out_O[22:0];
 
             inputs.sample();
             outputs.sample();
