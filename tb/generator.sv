@@ -8,10 +8,10 @@ class generator;
         if (!$value$plusargs("NUM_TESTS=%0d", NUM_TESTS)) NUM_TESTS = 10;
 
         t = new();
-        setconstraints();
 
         do
         begin
+            setconstraints();
             assert (t.randomize());
             common::gen2drv.put(t);
             common::cbfm0.waittilldone();
@@ -22,7 +22,6 @@ class generator;
         int RAND_CONS = 7;
         if ($value$plusargs("RAND_CONS=%0d", RAND_CONS))
         begin
-            $display("Constraints chosen with RAND_CONS = %d", RAND_CONS);
             RAND_CONS = RAND_CONS + 1;
         end
         t.constraint_mode(0);
@@ -52,6 +51,16 @@ class generator;
                 t.zeroonlyA.constraint_mode(1);
 				t.zeroonlyB.constraint_mode(1);
             end
+			51: begin
+                t.infA.constraint_mode(1);
+			end
+			55: begin
+				t.infB.constraint_mode(1);
+			end
+			60: begin
+				t.infA.constraint_mode(1);
+				t.infB.constraint_mode(1);
+			end
             default: begin
                 t.normonlyA.constraint_mode(1);
                 t.normonlyB.constraint_mode(1);

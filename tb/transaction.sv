@@ -15,6 +15,8 @@ class transaction;
     constraint normonlyB		{expB != '0 || mantB == 0;};
     constraint denormonlyB		{expB == '0 && mantB != '0;};
     constraint zeroonlyB		{expB == '0 && mantB == '0;};
+    constraint infA				{expA == '1 && mantA == '0;};
+    constraint infB				{expB == '1 && mantB == '0;};
     constraint bothnormdenormAB	{};
 
     protected int randcount = 0;

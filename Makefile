@@ -2,9 +2,9 @@
 
 all: build sim
 
-NUM_TESTS := 100
+NUM_TESTS := 10000
 TOLERATE_BITS := 3
-RAND_CONS := 5
+RAND_CONS := 61
 FPU_SRC := duv/pfpu32_top.v
 
 clean:
@@ -26,7 +26,8 @@ vsim_args  := \
 	+NUM_TESTS=$(NUM_TESTS) \
 	+TOLERATE_BITS=$(TOLERATE_BITS) \
 	+RAND_CONS=$(RAND_CONS) \
-	-suppress 8604
+	-suppress 8604 \
+	-suppress 8630
 
 ifdef TEST_PRINT
 	vsim_args += +TEST_PRINT
