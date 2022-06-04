@@ -112,9 +112,15 @@ module pfpu32_addsub
     addsub_agtb_i ? fract24b_i : fract24a_i;
 
     // shift amount
+`ifdef BUG_ADDSUB
+  wire [9:0] s1t_exp_diff =
+    addsub_agtb_i ? (exp10a_i + exp10b_i) :
+                    (exp10b_i + exp10a_i);
+`else
   wire [9:0] s1t_exp_diff =
     addsub_agtb_i ? (exp10a_i - exp10b_i) :
                     (exp10b_i - exp10a_i);
+`endif
 
   // limiter by 31
   wire [4:0] s1t_shr = s1t_exp_diff[4:0] | {5{|s1t_exp_diff[9:5]}};

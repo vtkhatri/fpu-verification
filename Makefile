@@ -33,6 +33,18 @@ ifdef TEST_PRINT
 	vsim_args += +TEST_PRINT
 endif
 
+ifeq ($(BUG), 1)
+	vlog_args += +define+BUG_ADDSUB
+else
+ifeq ($(BUG), 2)
+	vlog_args += +define+BUG_MULDIV
+else
+ifeq ($(BUG), 3)
+	vlog_args += +define+BUG_ADDSUB +define+BUG_MULDIV
+endif
+endif
+endif
+
 build:
 	vlog $(vlog_args) $(SV_TARGET)
 

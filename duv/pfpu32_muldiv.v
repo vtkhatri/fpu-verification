@@ -586,7 +586,11 @@ module pfpu32_muldiv
   // In fact, as the dividend and divisor was normalized
   //   and the result is non-zero
   //   the '1' is maximum number of leading zeros in the quotient.
+`ifdef BUG_MULDIV
+  wire s4t_nlz = s3o_res_qtnt26[25];
+`else
   wire s4t_nlz = ~s3o_res_qtnt26[25];
+`endif
   // left shift flag and corrected exponent
   wire s4t_shlx =
       // shift isn't needed (includes zero result)
